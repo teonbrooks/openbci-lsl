@@ -1,15 +1,16 @@
-# muse-lsl
+# openbci-lsl
 
-Stream data from [Muse EEG Headset](http://www.choosemuse.com/) (2016 edition) to [Lab Streaming Layer](https://github.com/sccn/labstreaminglayer).
+Modeled off of [Uri](https://github.com/urish)'s [muse-lsl](https://github.com/urish/muse-lsl) package.
+Stream data from [OpenBCI Headset](https://www.openbci.com/) using [AJ Keller](https://github.com/andrewjaykeller)'s [openbci node-js module](https://github.com/OpenBCI/OpenBCI_NodeJS) to [Lab Streaming Layer](https://github.com/sccn/labstreaminglayer).
 
 ## Installation
 
 Clone this repo:
 
-    git clone https://github.com/urish/muse-lsl
+    git clone https://github.com/teonbrooks/muse-lsl
 
 Install dependencies with yarn:
-    
+
     yarn
 
 Or npm:

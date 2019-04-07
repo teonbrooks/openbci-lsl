@@ -1,17 +1,17 @@
 {
-  "name": "muse-lsl",
+  "name": "openbci-lsl",
   "version": "0.1.0",
-  "description": "Muse 2016 EEG Headset LSL Server for Node.js",
+  "description": "OpenBCI EEG Headset LSL Server for Node.js",
   "main": "index.js",
-  "repository": "https://github.com/urish/muse-lsl",
-  "author": "Uri Shaked",
+  "repository": "https://github.com/teonbrooks/muse-lsl",
+  "author": "Teon Brooks",
   "license": "MIT",
   "scripts": {
     "start": "node index"
   },
   "dependencies": {
     "bleat": "^0.1.4",
-    "muse-js": "^1.0.0",
+    "@openbci/cyton": "^3.0.0",
     "noble": "^1.8.1",
     "node-lsl": "^0.1.0",
     "text-encoding": "^0.6.4",
