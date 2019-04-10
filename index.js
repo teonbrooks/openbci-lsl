@@ -1,37 +1,40 @@
 require('./text-polyfill');
-
-const { MUSE_SERVICE, MuseClient, zipSamples, channelNames } = require('muse-js');
-require("@openbci/cyton");
-// const noble = require('noble');
-// const bleat = require('bleat').webbluetooth;
-const lsl = require('node-lsl');
 const { Observable } = require('rxjs');
 
-// TO DO: work out the logic for connecting to the OpenBCI
-async function connect() {
-    let device = await bleat.requestDevice({
-        filters: [{ services: [MUSE_SERVICE] }]
-    });
-    const gatt = await device.gatt.connect();
-    console.log('Device name:', gatt.device.name);
+const lsl = require('node-lsl');
+const Cyton = require("@openbci/cyton");
 
-    const client = new MuseClient();
-    await client.connect(gatt);
-    client.controlResponses.subscribe(x => console.log('Response:', x));
-    await client.start();
-    console.log('Connected!');
-    return client;
-}
+
+async function connect() {
+    let client = await new Cyton({ verbose: true });
+
+    client.autoFindOpenBCIBoard().then(portName => {
+      if (portName) {
+        client.connect(portName)
+              .then(portName => {
+                console.log(`Connected. device: ${portName}`);
+                client.on("ready", () => {
+                client.streamStart();
+              })
+            )
+            return client;
+      } else {
+        console.log("Device not found.")
+      }}
+    })
+  }
 
 function streamLsl(client) {
     console.log('LSL: Creating Stream...');
 
     // These packets keep the connection alive
     const keepaliveTimer = setInterval(() => client.sendCommand(''), 3000);
-    const n_channels = 8;
-    const sfreq = 250;
+    const info = device.getInfo();
+    const n_channels = info.numberOfChannels;
+    const sfreq = info.sampleRate;
+    const name = info.boardType
 
-    const info = lsl.create_streaminfo("OpenBCI", "EEG", n_channels, s_freq, lsl.channel_format_t.cft_float32, client.deviceName);
+    const info = lsl.create_streaminfo("OpenBCI", "EEG", n_channels, sfreq, lsl.channel_format_t.cft_float32, name);
     const desc = lsl.get_desc(info);
     lsl.append_child_value(desc, "manufacturer", "OpenBCI");
     const channels = lsl.append_child(desc, "channels");
@@ -45,13 +48,13 @@ function streamLsl(client) {
     const outlet = lsl.create_outlet(info, 0, 360);
     let sampleCounter = 0;
 
-    Observable.from(zipSamples(client.eegReadings))
+    Observable.from(client.on('sample'))
         .finally(() => {
             lsl.lsl_destroy_outlet(outlet);
             clearInterval(keepaliveTimer);
         })
         .subscribe(sample => {
-            const sampleData = new lsl.FloatArray(sample.data);
+            const sampleData = new lsl.FloatArray(sample.channelData);
             lsl.push_sample_ft(outlet, sampleData, lsl.local_clock());
             sampleCounter++;
             process.stdout.clearLine();
