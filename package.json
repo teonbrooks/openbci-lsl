@@ -10,11 +10,7 @@
     "start": "node index"
   },
   "dependencies": {
-    "bleat": "^0.1.4",
-    "@openbci/cyton": "^3.0.0",
-    "noble": "^1.8.1",
-    "node-lsl": "^0.1.0",
-    "text-encoding": "^0.6.4",
-    "usb": "^1.2.0"
+    "openbci-observable": "^1.0.5",
+    "node-lsl": "^0.1.0"
   }
 }
